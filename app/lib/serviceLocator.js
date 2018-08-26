@@ -19,6 +19,9 @@ class ServiceLocator {
         this.routes = {};
         this.services = {};
     }
+    get helper(){
+        return baseHelper;
+    }
 
     get projectRoot() {
         return this.rootFolder;
