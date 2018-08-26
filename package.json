@@ -1,0 +1,31 @@
+{
+  "name": "t_task",
+  "version": "1.0.0",
+  "description": "test task",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "bluebird": "^3.5.1",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-generic-session": "^2.0.1",
+    "koa-generic-session-sequelize": "^2.0.3",
+    "koa-passport": "^4.1.0",
+    "koa-session": "^5.8.3",
+    "lodash": "^4.17.10",
+    "log4js": "^3.0.5",
+    "passport": "^0.4.0",
+    "pg": "^7.4.3",
+    "sequelize": "^4.38.0",
+    "umzug": "^2.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "sinon": "^6.1.5"
+  }
+}

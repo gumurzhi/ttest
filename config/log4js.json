@@ -1,0 +1,32 @@
+{
+  "appenders": {
+    "everything": { 
+      "type": "file", 
+      "filename": "./logs/app.log",
+      "maxLogSize": 10485760,
+      "numBackups": 3
+    },
+    "errors": {  
+      "type": "file", 
+      "filename": "./logs/errors.log"
+    },
+    "just-errors": { 
+      "type": "logLevelFilter", 
+      "appender": "errors", 
+      "level": "ERROR"
+    },
+    "console-all": {
+      "type": "console",
+      "level": "ALL"
+    }
+  },
+  "categories": {
+    "default": { "appenders": [
+      "just-errors", 
+      "everything",
+      "console-all"
+      ], 
+    "level": "ALL"
+    }
+  }
+}
