@@ -9,5 +9,13 @@ class UserController {
 
     addUser(user, params, query, body){
         return services.userService.addUser(body)
+  //    return {a: 3443}
+    }
+
+  async  test(user, params, query, body){
+       // return services.userService.addUser(body)
+            return {a: 3443}
     }
 }
+
+module.exports = new UserController();

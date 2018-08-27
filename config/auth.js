@@ -1,4 +1,8 @@
-const passport = require('koa-passport');
+const passport = require('koa-passport')
+    , SL = require('../app/lib/serviceLocator')
+    , models = SL.models
+    , services = SL.services
+;
 
 const fetchUser = (() => {
     // This is an example! Use password hashing in your project and avoid storing passwords in your code
@@ -22,15 +26,15 @@ passport.deserializeUser(async function (id, done) {
 });
 
 const BasicStrategy = require('passport-http').BasicStrategy;
-passport.use(new BasicStrategy(function (username, password, done) {
-    fetchUser()
+passport.use(new BasicStrategy(function (email, password, done) {
+    services.userService.getByEmail(email)
         .then(user => {
-            if (username === user.username && password === user.password) {
+            if (user && user.comparePassword(password)) {
                 done(null, user)
             } else {
                 done(null, false)
             }
         })
         .catch(err => done(err))
-}))
+}));
 

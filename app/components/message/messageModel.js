@@ -28,8 +28,8 @@ module.exports = function (sequelize, DataTypes) {
 
     Message.associate = function (models) {
         Message.belongsTo(models.dealModel, {as: 'deal'});
-        Message.hasOne(models.userModel, {as: 'sender'});
-        Message.hasOne(models.userModel, {as: 'receiver'});
+        Message.belongsTo(models.userModel, {as: 'sender'});
+        Message.belongsTo(models.userModel, {as: 'receiver'});
     };
 
     return Message;

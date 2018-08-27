@@ -8,6 +8,7 @@ const fs = require('fs')
     , baseHelper = require('../helpers/baseHelper')
     , assertEx = baseHelper.assertEx
     , db = require('./db')
+    , route = require('koa-route')
 ;
 
 
@@ -32,11 +33,35 @@ class ServiceLocator {
         return asyncReadDir(this.rootFolder + 'app/components')
     }
 
+    /*
+
+            app.use(route.get('/app', function (ctx) {
+                ctx.body = 'hello world'
+            }));
+     */
+
+    loadRoutes(app, isAuthNeeded) {
+        this.routes.filter(route => !!route.authRequired === !!isAuthNeeded)
+            .forEach(rt => {
+                let controllerPathParts = rt.middleware.split('.');
+                assertEx(this.controllers[controllerPathParts[0]][controllerPathParts[1]], `no such controller: ${rt.middleware}`);
+                app.use(route[rt.method](rt.path, async (ctx) => {
+                    try {
+                        ctx.body = await  this.controllers[controllerPathParts[0]][controllerPathParts[1]](ctx.state.user, ctx.request.params, ctx.request.query, ctx.request.body, ctx)
+                    } catch (e) {
+                        ctx.status = 500;
+                    }
+
+                }))
+            })
+
+    }
+
     getLogger(m) {
         return loggerLib(m)
     }
 
-    initialize(app) {
+    initialize() {
         return this._loadComponents()
             .then(this._loadModels.bind(this))
             .then(() => db.connect())

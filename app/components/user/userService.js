@@ -3,12 +3,12 @@
 const SL = require('../../lib/serviceLocator')
     , logger = SL.getLogger(module)
     , models = SL.models
-    , assertEx = SL.helper
+    , assertEx = SL.helper.assertEx
 ;
 
 class UserService{
     async isEmailExists(email){
-        let user = await models.userModel.findOne({where: {email}});
+        let user = await this.getByEmail(email);
         return !!user;
     }
 
@@ -21,4 +21,10 @@ class UserService{
         return savedUser;
     }
 
+    async getByEmail(email){
+        return models.userModel.findOne({where: {email}});
+    }
+
 }
+
+module.exports = new UserService();

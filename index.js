@@ -14,7 +14,7 @@ const SL = require('./app/lib/serviceLocator')
 
 
 SL.initialize(app)
-    .then(data => {
+    .then(() => {
         const SequelizeStore = require('koa-generic-session-sequelize');
 
         app.use(bodyParser());
@@ -27,118 +27,50 @@ SL.initialize(app)
         }));
 
         const passport = require('koa-passport');
-        // require('./config/auth/passport_serializers')();
-        // require('./config/auth/passport_strategies')();
-        require('./config/auth/auth');
+        require('./config/auth');
 
         app.use(passport.initialize());
         app.use(passport.session());
 
         const route = require('koa-route');
+        app.keys = ['very', 'secret', 'key'];
 
 
+        SL.loadRoutes(app, false);
+        app.use(async function passportBasicAuthCheck(ctx, next) {
+            if (ctx.isAuthenticated()) {
+                logger.debug('Found user\'s session. Basic Auth not used');
+                return  next();
+            }
 
+            logger.debug('User\'s session not found, try authenticate');
 
+            await passport.authenticate('basic', async function (err, user, options) {
+                if (err) {
+                    logger.error('Auth error: %s', JSON.stringify(err));
+                    return ctx.status = 500;
+                }
 
-        // POST /login
-        // app.use(route.post('/login',
-        //     passport.authenticate('basic', (err, user) => {
-        //         console.log();
-        //     })
-        // ))
-        //
-//         //
-//         app.use(async function (ctx, next) {
-//             await new Promise((response, reject) => {
-//                 passport.authenticate.call(passport, 'basic',  (err, user, info) => {
-// console.log();
-//                 })
-//             })
-//             await next();
-//         })
+                try {
+                    if (user) {
+                        logger.debug('Basic Auth ok for user with id %s', user.id);
+                        await ctx.login(user);
+                    } else {
+                       return ctx.status = 401;
+                    }
+                } catch (e) {
+                    logger.error('Passport basic auth middleware login error: %s', e.toString());
+                    console.log('Passport basic auth middleware login error:', e.toString(), e.stack);
+                    ctx.status = 500;
+                }
 
-        // app.use(async function (ctx, next) {
-        // })
-        // app.use(function (ctx, next) {
-        //     if (ctx.isAuthenticated()) {
-        //         return next()
-        //     } else {
-        //         ctx.status = 401
-        //     }
-        // })
+                logger.debug('Call next middleware');
+                 await next();
 
-        app.use(route.post('/login',
-            passport.authenticate('basic', {
-                successRedirect: '/app',
-                failureRedirect: '/'
-            })
-        ))
-
-        // app.use(route.get('/app', function (ctx) {
-        //     passport.authenticate('basic',  (err, user, info) => {
-        //         ctx.body = 'hello world'
-        //     })
-        // }));
-
-//         app.use(async (ctx, next) => {
-//             if (ctx.isAuthenticated()) {
-//                 logger.debug('Found user\'s session. Basic Auth not used');
-//                 await next();
-//             }
-//
-//             logger.debug('User\'s session not found, try authenticate');
-//          let a =  await passport.authenticate('basic',  async function (err, user, options) {
-//                 if (err) {
-//                     logger.error('Auth error: %s', JSON.stringify(err));
-//                     if (err.name === 'TimeoutError') {
-//                         let sequelize =  SL.dbInstanse;
-//                         let pool = sequelize.connectionManager.pool;
-//                         logger.warn(`Sequelize pool size: ${pool.size}, available: ${pool.available}, pending: ${pool.pending}`);
-//                     }
-//                     return ctx.status = 500;
-//                 }
-//
-//                 try {
-//                     if (user) {
-//                         logger.debug('Basic Auth ok for user with id %s', user.id);
-//                         return ctx.login(user);
-//                     } else if (config.passport.forceBasicAuth) {
-//                         logger.error('Error user auth with credentials: %s, error reason: %s', JSON.stringify(ctx.request.body), JSON.stringify(options));
-//                         ctx.status = 401;
-//                         ctx.set('WWW-Authenticate', 'Basic realm=":"');
-//                         ctx.body = '';
-//                     }
-//                 } catch (e) {
-//                     logger.error('Passport basic auth middleware login error: %s', e.toString());
-//                     console.log('Passport basic auth middleware login error:', e.toString(), e.stack);
-//                     ctx.status = 500;
-//                 }
-//
-//                 logger.debug('Call next middleware');
-//                 return next;
-//
-//             });
-// console.log();
-//         });
-
-
-        app.use(async ctx => {
-            ctx.isAuthenticated()
-            ctx.isUnauthenticated()
-            await ctx.login()
-            ctx.logout()
-            ctx.state.user
-        })
-
-        app.use(route.get('/app', function (ctx) {
-            ctx.body = 'hello world'
-        }));
-
-        app.use(async (ctx, next) => {
-            await next();
-            const rt = ctx.response.get('X-Response-Time');
-            console.log(`${ctx.method} ${ctx.url} - ${rt}`);
+            })(ctx);
         });
+
+        SL.loadRoutes(app, true);
 
 // x-response-time
 
@@ -147,12 +79,6 @@ SL.initialize(app)
             await next();
             const ms = Date.now() - start;
             ctx.set('X-Response-Time', `${ms}ms`);
-        });
-
-// response
-
-        app.use(async ctx => {
-            ctx.body = 'Hello World';
         });
 
         app.listen(3000);

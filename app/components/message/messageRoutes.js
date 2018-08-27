@@ -1,5 +1,5 @@
 
 module.exports = [
-    {method: 'post', path: '/register1', authRequired: false, middleware: ['userController.addUser']},
-    {method: 'get', path: '/login1', authRequired: false, middleware: ['userController.login']}
+    {method: 'post', path: '/register1', authRequired: true, middleware: 'userController.test'},
+   // {method: 'get', path: '/login1', authRequired: true, middleware: 'userController.login'}
 ];

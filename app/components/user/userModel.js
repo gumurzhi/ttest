@@ -22,43 +22,35 @@ module.exports = function (sequelize, DataTypes) {
                 }
             }
         },
-        password: {type: DataTypes.STRING, field: 'password_hash', allowNull: false, defaultValue: ''},
+        password: {type: DataTypes.STRING, field: 'password', allowNull: false, defaultValue: ''},
     }, {
         underscored: true,
         hooks: {
-            // beforeCreate: function (user, options, fn) {
-            //     if (user.email) {
-            //         user.email = user.email.toLowerCase();
-            //     }
-            //     user.username = user.username.toLowerCase();
-            //
-            //     if (user.getDataValue('password_hash') && !user.passwordHash) {
-            //         user.passwordHash = user.getDataValue('password_hash');
-            //     }
-            //     if (user.salt && user.passwordHash) {
-            //         return Promise.resolve(user);
-            //     }
-            //
-            //     return user.generateSalt().then(function (salt) {
-            //         return user.generateHash(salt, user._plainPassword).then(function (passwordHash) {
-            //             user.salt = salt;
-            //             user.passwordHash = passwordHash;
-            //             Promise.resolve(user);
-            //         });
-            //     });
-            // },
+            beforeCreate: function (user, options, fn) {
+                if (user.email) {
+                    user.email = user.email.toLowerCase();
+                }
+                return new Promise((resolve, reject) => {
+                    bcrypt.hash(user.password, 7, function (err, hash) {
+                        // Store hash in your password DB.
+                        if (err) reject(err);
+                        user.password = hash;
+                        resolve(user);
+                    });
+                })
+            },
 
         },
-        getterMethods: {
-            isAdmin() {
-                return this.role === ROLES.ADMIN;
-            }
-        },
-        setterMethods: {
-            password: function (password) {
-                this._plainPassword = password;
-            }
-        },
+        // getterMethods: {
+        //     isAdmin() {
+        //         return this.role === ROLES.ADMIN;
+        //     }
+        // },
+        // setterMethods: {
+        //     password: function (password) {
+        //         this._plainPassword = password;
+        //     }
+        // },
         indexes: [
             {
                 unique: true,
