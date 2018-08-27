@@ -16,10 +16,11 @@ class ServiceLocator {
         this.rootFolder = __dirname.replace('app/lib', '');
         this.models = {};
         this.controllers = {};
-        this.routes = {};
+        this.routes = [];
         this.services = {};
     }
-    get helper(){
+
+    get helper() {
         return baseHelper;
     }
 
@@ -35,16 +36,17 @@ class ServiceLocator {
         return loggerLib(m)
     }
 
-    initialize() {
+    initialize(app) {
         return this._loadComponents()
             .then(this._loadModels.bind(this))
             .then(() => db.connect())
-           .then(() => {
-               let migrations =  require('../helpers/migrations')
-               return migrations();
-           })
+            .then(() => {
+                let migrations = require('../helpers/migrations');
+                return migrations();
+            })
             .catch(err => {
-                logger.error('ERROR:', err);
+                logger.error('initialize ERROR:', err);
+                throw err;
             });
     }
 
@@ -75,25 +77,23 @@ class ServiceLocator {
     loadSingleComponent(componentFolder, listOfParts) {
         assertEx(Array.isArray(listOfParts), 'Array expected');
         for (let i = 0; i < listOfParts.length; i++) {
-            try {
-                let fileName = listOfParts[i].replace('.js', '');
-                if (fileName.includes('Model')) {
-                    assertEx(!this.models[fileName], `already have model ${fileName}`);
-                    this.models[fileName] = `${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`;
-                } else if (fileName.includes('Controller')) {
-                    assertEx(!this.controllers[fileName], `already have controller ${fileName}`);
-                    this.controllers[fileName] = require(`${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`);
-                } else if (fileName.includes('Service')) {
-                    assertEx(!this.services[fileName], `already have service ${fileName}`);
-                    this.services[fileName] = require(`${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`);
-                } else if (fileName.includes('Routes')) {
-                    assertEx(!this.routes[fileName], `already have service ${fileName}`);
-                    this.routes[fileName] = require(`${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`);
-                } else {
-                    logger.error('broken fileName', fileName);
-                }
-            } catch (e) {
-                logger.error(e)
+            let fileName = listOfParts[i].replace('.js', '');
+            if (fileName.includes('Model')) {
+                assertEx(!this.models[fileName], `already have model ${fileName}`);
+                this.models[fileName] = `${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`;
+            } else if (fileName.includes('Controller')) {
+                assertEx(!this.controllers[fileName], `already have controller ${fileName}`);
+                this.controllers[fileName] = require(`${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`);
+            } else if (fileName.includes('Service')) {
+                assertEx(!this.services[fileName], `already have service ${fileName}`);
+                this.services[fileName] = require(`${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`);
+            } else if (fileName.includes('Routes')) {
+                let newRoutes = require(`${this.projectRoot}app/components/${componentFolder}/${listOfParts[i]}`);
+                let exists = this.routes.filter(route => newRoutes.find(routeEl => routeEl.method == route.method && routeEl.path == route.path));
+                assertEx(!exists.length, `this routes already exists:  ${JSON.stringify(exists)}`);
+                this.routes = this.routes.concat(newRoutes);
+            } else {
+                logger.error('broken fileName', fileName);
             }
         }
     }

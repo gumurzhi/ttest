@@ -67,15 +67,17 @@ module.exports = function (sequelize, DataTypes) {
         ]
     });
 
-
-    // User.prototype.updateTenantName = function (name) {
-    //     if (this.isRegularUser) {
-    //         return Promise.reject({status: 403, message: 'Not enough rights to update tenant name'});
-    //     }
-    //
-    //     return this.getTenant()
-    //         .then(tenant => tenant.update({ name }));
-    // };
+    User.prototype.comparePassword = function comparePassword(testedPassword) {
+        let storedHash = this.password;
+        return new Promise(function (resolve, reject) {
+            bcrypt.compare(testedPassword, storedHash, function (err, res) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(res);
+            });
+        });
+    };
 
     User.associate = function (models) {
         User.hasMany(models.messageModel, {as: 'messages'});

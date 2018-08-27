@@ -16,10 +16,13 @@
     "koa-generic-session": "^2.0.1",
     "koa-generic-session-sequelize": "^2.0.3",
     "koa-passport": "^4.1.0",
+    "koa-route": "^3.2.0",
     "koa-session": "^5.8.3",
     "lodash": "^4.17.10",
     "log4js": "^3.0.5",
     "passport": "^0.4.0",
+    "passport-http": "^0.3.0",
+    "passport-local": "^1.0.0",
     "pg": "^7.4.3",
     "sequelize": "^4.38.0",
     "umzug": "^2.1.0"

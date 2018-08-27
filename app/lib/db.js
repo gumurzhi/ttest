@@ -8,6 +8,10 @@ let reconnectTimeout = 1000
     ,timestamp
 ;
 
+function delay(timeout) {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
 class Db {
     constructor(){
      this.sequelize = new Sequelize(
@@ -47,7 +51,7 @@ class Db {
                 logger.error(`Database connection failed. Try again after ${reconnectTimeout / 1000} seconds`);
                 reconnectTimeout *= 2;
                 return delay(reconnectTimeout)
-                    .then(() => connect());
+                    .then(() => this.connect());
             });
     }
 }
