@@ -32,7 +32,7 @@ module.exports = {
                 )
             )
             .then(() => queryInterface.sequelize.query(
-                    `CREATE TYPE st AS ENUM ('open', 'closed', rejected);
+                    `CREATE TYPE st AS ENUM ('open', 'closed', 'rejected');
                       create
 	                    table
 		                    "deals" ( id uuid not null,
