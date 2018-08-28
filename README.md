@@ -33,3 +33,6 @@ POST /message/:recipientId/:dealId
  }
 
  will create new message belonged to existing deal
+
+
+docker container will handle 2 commands - start and test
