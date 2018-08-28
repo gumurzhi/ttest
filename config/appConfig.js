@@ -18,5 +18,6 @@ module.exports = {
                 "underscored": true
             },
             "isolationLevel": "READ COMMITTED"
-        }
+        },
+    serverPort: 3000
 };

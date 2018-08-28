@@ -1,5 +1,5 @@
 module.exports = {
-  assertEx : (condition, message) => {
-      if(!condition) throw new Error(message);
+  assertEx : (condition, message, code) => {
+      if(!condition) throw {code: code || 500, message};
   }
 };

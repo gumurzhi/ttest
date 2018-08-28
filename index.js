@@ -5,19 +5,21 @@ const SL = require('./app/lib/serviceLocator')
     , Koa = require('koa')
     , app = new Koa()
     , bodyParser = require('koa-bodyparser')
-    //   , session = require('koa-session')\
-
-
+    , config = require('./config/appConfig')
     , session = require('koa-generic-session')
-    , passport = require('koa-passport')
 ;
-
 
 SL.initialize(app)
     .then(() => {
         const SequelizeStore = require('koa-generic-session-sequelize');
 
         app.use(bodyParser());
+
+        SL.loadRoutes(app, false);
+
+        app
+            .use(SL.publicRouterInstance.routes())
+            .use(SL.publicRouterInstance.allowedMethods());
 
         app.use(session({
             store: new SequelizeStore(
@@ -26,17 +28,17 @@ SL.initialize(app)
             )
         }));
 
+
         const passport = require('koa-passport');
         require('./config/auth');
 
         app.use(passport.initialize());
         app.use(passport.session());
 
-//        const route = require('koa-route');
+
         app.keys = ['very', 'secret', 'key'];
 
 
-        SL.loadRoutes(app, false);
         app.use(async function passportBasicAuthCheck(ctx, next) {
             if (ctx.isAuthenticated()) {
                 logger.debug('Found user\'s session. Basic Auth not used');
@@ -72,7 +74,9 @@ SL.initialize(app)
 
 
         SL.loadRoutes(app, true);
-
+        app
+            .use(SL.privateRouterInstance.routes())
+            .use(SL.privateRouterInstance.allowedMethods());
 // x-response-time
 
         app.use(async (ctx, next) => {
@@ -82,8 +86,9 @@ SL.initialize(app)
             ctx.set('X-Response-Time', `${ms}ms`);
         });
 
-        app.listen(3000);
-        logger.info(`started on port: ${3000}`);
+        const port = config.serverPort || 3000;
+        app.listen(port);
+        logger.info(`started on port: ${port}`);
     })
     .catch(err => {
         logger.error('ERROR:', err);

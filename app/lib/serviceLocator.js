@@ -8,7 +8,9 @@ const fs = require('fs')
     , baseHelper = require('../helpers/baseHelper')
     , assertEx = baseHelper.assertEx
     , db = require('./db')
-    , route = require('koa-route')
+    , Router = require('koa-router')
+    , privateRouter = new Router()
+    , publicRouter = new Router()
 ;
 
 
@@ -29,6 +31,14 @@ class ServiceLocator {
         return this.rootFolder;
     }
 
+    get publicRouterInstance() {
+        return publicRouter;
+    }
+
+    get privateRouterInstance() {
+        return privateRouter;
+    }
+
     getComponentsList() {
         return asyncReadDir(this.rootFolder + 'app/components')
     }
@@ -41,21 +51,22 @@ class ServiceLocator {
      */
 
     loadRoutes(app, isAuthNeeded) {
+        let router = isAuthNeeded ? privateRouter : publicRouter;
         this.routes.filter(route => !!route.authRequired === !!isAuthNeeded)
             .forEach(rt => {
                 let controllerPathParts = rt.middleware.split('.');
                 assertEx(this.controllers[controllerPathParts[0]][controllerPathParts[1]], `no such controller: ${rt.middleware}`);
-                app.use(route[rt.method](rt.path, async (ctx) => {
+                router[rt.method](rt.path, async (ctx) => {
                     try {
-                        ctx.body = await  this.controllers[controllerPathParts[0]][controllerPathParts[1]](ctx.state.user, ctx.request.params || {}, ctx.request.query || {}, ctx.request.body, ctx)
+                        ctx.body = await this.controllers[controllerPathParts[0]][controllerPathParts[1]](ctx.state.user, ctx.params || {}, ctx.query || {}, ctx.request.body, ctx)
                     } catch (e) {
                         logger.error(e);
-                        ctx.status = 500;
+                        if (e.message) ctx.body = e.message;
+                        ctx.status = e.code || 500;
                     }
 
-                }))
+                })
             })
-
     }
 
     getLogger(m) {

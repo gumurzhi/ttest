@@ -14,8 +14,8 @@ class UserService{
 
     async addUser(user){
         logger.debug('try to create user',);
-        assertEx(user.email, 'email expected');
-        assertEx(!(await this.isEmailExists(user.email)));
+        assertEx(user.email, 'email expected',  400);
+        assertEx(!(await this.isEmailExists(user.email)), 'such email already exists', 400);
         const savedUser = await models.userModel.create(user);
         logger.debug(`user ${JSON.stringify(savedUser)} \n  created`);
         return savedUser;

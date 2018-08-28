@@ -13,33 +13,10 @@ describe('flow.run.service tests', () => {
     afterEach(() => {
         sandbox.restore();
     });
-    describe('getComponentsList tests', () => {
-        it('just call method', (done) => {
-            serviceLocator.getComponentsList()
-                .then(data =>{
-                    assert(data.length > 0, 'there should be components');
-                       done()
-                    })
-                    .catch(err =>{
-                        logger.error('ERROR:', err);
-                    });
+    it('just fake call method', () => {
+            serviceLocator.getLogger(module);
+                logger.info(`it's fine`)
         })
-    })
-    it('dfdfd', (done) => {
-        serviceLocator.initialize()
-            .then(data =>{
-                   logger.info('data',data);
 
-                })
-            .then(() => {
-                return serviceLocator.models.dealModel.create()
-            })
-            .then(data => {
-                console.log(data);
-                done();
-            })
-                .catch(err =>{
-                    logger.error('ERROR:', err);
-                });
-    })
+
 });

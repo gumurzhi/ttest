@@ -10,7 +10,7 @@ const SL = require('../../lib/serviceLocator')
 class MessageService {
     async addMessageAndDeal(sender, recipientId, message) {
         const receiver = await services.userService.getById(recipientId);
-        assertEx(!!receiver, `no recipient with such id: ${recipientId}`);
+        assertEx(!!receiver, `no recipient with such id: ${recipientId}`, 404);
         let newDeal = await services.dealService.addDeal();
         message.sender_id = sender.id;
         message.receiver_id = receiver.id;
@@ -20,9 +20,9 @@ class MessageService {
 
     async addMessage(user, dealId, receiverId, message) {
         const receiver = await services.userService.getById(receiverId);
-        assertEx(!!receiver, `no recipient with such id: ${receiverId}`);
+        assertEx(!!receiver, `no recipient with such id: ${receiverId}`, 404);
         const deal = await services.dealService.getByIdIncMessages(dealId, user.id);
-        assertEx(!!deal, `no open deal with such id: ${dealId}`);
+        assertEx(!!deal, `no open deal with such id: ${dealId}`, 404);
         if (message.price < 0) {
             deal.setDataValue('state', 'rejected');
             await  deal.save();
