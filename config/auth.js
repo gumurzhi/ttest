@@ -16,9 +16,9 @@ passport.serializeUser(function (user, done) {
     done(null, user)
 });
 
-passport.deserializeUser(async function (id, done) {
+passport.deserializeUser(async function (user, done) {
     try {
-        const user = await fetchUser();
+      //  const user = await fetchUser();
         done(null, user)
     } catch (err) {
         done(err)

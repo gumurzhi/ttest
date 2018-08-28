@@ -24,7 +24,9 @@ class UserService{
     async getByEmail(email){
         return models.userModel.findOne({where: {email}});
     }
-
+    getById(userId){
+        return models.userModel.findById(userId);
+    }
 }
 
 module.exports = new UserService();

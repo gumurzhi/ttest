@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (sequelize, DataTypes) {
-    let Message = sequelize.define('Message', {
+    let Message = sequelize.define('message', {
         id: {
             primaryKey: true,
             type: DataTypes.UUID,
@@ -19,8 +19,11 @@ module.exports = function (sequelize, DataTypes) {
         }
     }, {
         hooks: {
-            beforeCreate: function () {
-              this.date = new Date();
+            beforeCreate: function (message) {
+                return new Promise((resolve) => {
+                    message.date = new Date();
+                   return resolve(message);
+                });
             },
 
         }

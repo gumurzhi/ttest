@@ -47,8 +47,9 @@ class ServiceLocator {
                 assertEx(this.controllers[controllerPathParts[0]][controllerPathParts[1]], `no such controller: ${rt.middleware}`);
                 app.use(route[rt.method](rt.path, async (ctx) => {
                     try {
-                        ctx.body = await  this.controllers[controllerPathParts[0]][controllerPathParts[1]](ctx.state.user, ctx.request.params, ctx.request.query, ctx.request.body, ctx)
+                        ctx.body = await  this.controllers[controllerPathParts[0]][controllerPathParts[1]](ctx.state.user, ctx.request.params || {}, ctx.request.query || {}, ctx.request.body, ctx)
                     } catch (e) {
+                        logger.error(e);
                         ctx.status = 500;
                     }
 

@@ -32,7 +32,7 @@ SL.initialize(app)
         app.use(passport.initialize());
         app.use(passport.session());
 
-        const route = require('koa-route');
+//        const route = require('koa-route');
         app.keys = ['very', 'secret', 'key'];
 
 
@@ -69,6 +69,7 @@ SL.initialize(app)
 
             })(ctx);
         });
+
 
         SL.loadRoutes(app, true);
 

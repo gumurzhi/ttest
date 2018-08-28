@@ -70,9 +70,5 @@ module.exports = function (sequelize, DataTypes) {
             });
         });
     };
-
-    User.associate = function (models) {
-        User.hasMany(models.messageModel, {as: 'messages'});
-    };
     return User;
 };
