@@ -41,16 +41,6 @@ module.exports = function (sequelize, DataTypes) {
             },
 
         },
-        // getterMethods: {
-        //     isAdmin() {
-        //         return this.role === ROLES.ADMIN;
-        //     }
-        // },
-        // setterMethods: {
-        //     password: function (password) {
-        //         this._plainPassword = password;
-        //     }
-        // },
         indexes: [
             {
                 unique: true,

@@ -6,10 +6,7 @@ const SL = require('../../lib/serviceLocator')
 class MessageController {
 
     addMessage(user, params, query, body){
-        params.dealId = 44;
         return params.dealId ? services.messageService.addMessage(user, params.dealId, params.recipientId, body ) : services.messageService.addMessageAndDeal(user, params.recipientId, body);
-      //  return services.userService.addUser(body)
-        //    return {a: 3443}
     }
 
 

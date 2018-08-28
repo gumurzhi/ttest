@@ -20,7 +20,7 @@ class DealService {
         )
     }
 
-    async getMy() {
+    async getMy(userId) {
         let messages = await SL.dbInstanse.query(
             `select
 	"messages"."date",
@@ -32,7 +32,7 @@ class DealService {
 from
 	messages
 join "users" on sender_id = "users".id 
-where receiver_id = 'e55bd465-0734-460f-abf2-2d0457d8548a'
+where receiver_id = '${userId}'
 union
 select
 	"messages"."date",
@@ -44,7 +44,7 @@ select
 from
 	messages
 join "users" on receiver_id = "users".id 
-where sender_id = 'e55bd465-0734-460f-abf2-2d0457d8548a'
+where sender_id = '${userId}'
 order by "date" asc
 `
         );
