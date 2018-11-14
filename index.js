@@ -1,5 +1,5 @@
 "use strict";
-
+//1212
 const SL = require('./app/lib/serviceLocator')
     , logger = SL.getLogger(module)
     , Koa = require('koa')
