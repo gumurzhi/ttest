@@ -17,4 +17,9 @@ describe('flow.run.service tests', () => {
         serviceLocator.getLogger(module);
         logger.info(`it's fine`)
     })
+    it('just fake call method', () => {
+        serviceLocator.getLogger(module);
+        fdfd
+        logger.info(`it's fine`)
+    })
 });
