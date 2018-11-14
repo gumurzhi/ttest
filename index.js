@@ -8,7 +8,7 @@ const SL = require('./app/lib/serviceLocator')
     , config = require('./config/appConfig')
     , session = require('koa-generic-session')
 ;
-
+//dfdfdfdfd
 SL.initialize(app)
     .then(() => {
         const SequelizeStore = require('koa-generic-session-sequelize');
