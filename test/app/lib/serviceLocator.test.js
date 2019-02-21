@@ -14,7 +14,9 @@ describe('flow.run.service tests', () => {
         sandbox.restore();
     });
     it('just fake call method', () => {
+throw Error('dfdffdfdf');
         serviceLocator.getLogger(module);
         logger.info(`it's fine`)
     })
+   
 });
